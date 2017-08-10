@@ -21,11 +21,12 @@ public final class UrlFilterUtils {
 
     /**
      * 添加元素  把8个hash函数映射的位置都置为1
+     * 加synchronized类锁
      *
      * @param key
      * @return
      */
-    public static boolean add(String key) {
+    public static synchronized boolean add(String key) {
         int keyCode[] = lrandom(key);
         bits.set(keyCode[0]);
         bits.set(keyCode[1]);

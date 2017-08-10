@@ -1,10 +1,13 @@
 package crawler.zhihu.service;
 
+import crawler.zhihu.bean.ZhihuUser;
+import crawler.zhihu.utils.DBUtils;
 import crawler.zhihu.utils.UrlFilterUtils;
+import crawler.zhihu.utils.UserParseUtils;
 import crawler.zhihu.utils.WebHtmlUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 
 /**
@@ -99,7 +102,43 @@ public class ZhihuUserCrawler {
      */
     private static void spilderTheUrl(String url) {
         //通过代理的方式url的html页面
-        Document document = Jsoup.parse(WebHtmlUtils.getHtmlByUrlProxyIp(url));
-        //TODO 解析网页并持久化
+        String html = WebHtmlUtils.getHtmlByUrlProxyIp(url);
+        //解析页面
+        List list = UserParseUtils.getInstance().pageParser(html, url);
+        ZhihuUser zhihuUser = (ZhihuUser) list.get(0);
+        //插入到数据库中
+        DBUtils.insert(zhihuUser);
+        //把用户所关注的人的url加入到阻塞队列
+        Set<String> userIdSet = (Set<String>) list.get(1);
+        addUserFollowingUrl(userIdSet);
+    }
+
+    /**
+     * 将第一页的关注者添加到阻塞队列：不爬取所有的关注：1. 怕关注者太多，阻塞队列会出现异常
+     * 2. 这样可减少爬取次数，不用再更新另一页了
+     * int i = 1;   // 就拿第一页的关注者  爬多页方法
+     * String userFollowingUrl = url + "?page=" + i;
+     * https://www.zhihu.com/people/wang-ni-ma-94/following
+     *
+     * @param userIdSet
+     */
+    private static void addUserFollowingUrl(Set<String> userIdSet) {
+        //判断当前页关注人数是否为0，是的话就跳出循环
+        //因为第一个是用户本身，不是它的关注者  可以通过bloom filter来判断，但在这里进行判断消除更好！
+        if (userIdSet.size() > 1) {
+            int index = 1;
+            for (String userId : userIdSet) {
+                if (index == 1) {
+                    index++;
+                    continue;
+                }
+                try {
+                    urlQueue.put("https://www.zhihu.com/people/" + userId + "/following");
+                } catch (InterruptedException e) {
+                    System.out.println("将url添加到阻塞队列失败！！");
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

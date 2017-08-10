@@ -37,7 +37,7 @@ public final class ProxyIpUtils {
             System.getProperties().setProperty("http.proxyHost", proxyIp);
             System.getProperties().setProperty("http.proxyPort", proxyPort);
 
-            System.out.println("设置代理ip为：" + proxyIp + "端口号为：" + proxyPort);
+//            System.out.println("设置代理ip为：" + proxyIp + "端口号为：" + proxyPort);
         } catch (Exception e) {
             System.out.println("重新设置代理ip");
             proxyIp();

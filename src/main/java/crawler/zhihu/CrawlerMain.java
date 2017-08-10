@@ -14,9 +14,9 @@ public class CrawlerMain {
 
     public static void main(String[] args) {
 
-        picSpider();// 爬取某个问题下的图片
+        // picSpider();// 爬取某个问题下的图片
 
-        //userSpider();   //爬取用户信息
+        userSpider();   //爬取用户信息
 
     }
 
@@ -33,11 +33,11 @@ public class CrawlerMain {
 
     /**
      * 爬取知乎用户信息，持久化到数据库
-     * url为个人主页如："https://www.zhihu.com/people/wang-ni-ma-94"
+     * url为个人主页如："https://www.zhihu.com/people/wang-ni-ma-94/following"
      */
     public static void userSpider() {
-        //定义爬虫入口url 以王尼玛主页入口为例
-        String url = "https://www.zhihu.com/people/wang-ni-ma-94";
+        //定义爬虫入口url 以我的知乎链接为入口  （可换成知乎一些名人进行爬取）
+        String url = "https://www.zhihu.com/people/wang-jing-zeng-36/following";
 
         try {
             ZhihuUserCrawler.startCrawler(url);

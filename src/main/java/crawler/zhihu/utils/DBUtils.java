@@ -80,8 +80,8 @@ public class DBUtils {
         if (connection != null) {
             try {
                 String sql = "insert into user " +
-                        "(username,sex,location,business,employment,position,education,major,agrees,thanks,asks,answers,posts,followees,followers) " +
-                        "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                        "(username,sex,location,business,employment,position,education,agrees,thanks,asks,answers,posts,followees,followers,usertoken,major) " +
+                        "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 ps = connection.prepareStatement(sql);
                 ps.setString(1, zhihuUser.getUsername());
                 ps.setString(2, zhihuUser.getSex());
@@ -90,14 +90,15 @@ public class DBUtils {
                 ps.setString(5, zhihuUser.getEmployment());
                 ps.setString(6, zhihuUser.getPosition());
                 ps.setString(7, zhihuUser.getEducation());
-                ps.setString(8, zhihuUser.getMajor());
-                ps.setInt(9, zhihuUser.getAgrees());
-                ps.setInt(10, zhihuUser.getThanks());
-                ps.setInt(11, zhihuUser.getAsks());
-                ps.setInt(12, zhihuUser.getAnswers());
-                ps.setInt(13, zhihuUser.getPosts());
-                ps.setInt(14, zhihuUser.getFollowees());
-                ps.setInt(15, zhihuUser.getFollowers());
+                ps.setInt(8, zhihuUser.getAgrees());
+                ps.setInt(9, zhihuUser.getThanks());
+                ps.setInt(10, zhihuUser.getAsks());
+                ps.setInt(11, zhihuUser.getAnswers());
+                ps.setInt(12, zhihuUser.getPosts());
+                ps.setInt(13, zhihuUser.getFollowees());
+                ps.setInt(14, zhihuUser.getFollowers());
+                ps.setString(15, zhihuUser.getUserToken());
+                ps.setString(16, zhihuUser.getMajor());
                 //存储user
                 count = ps.executeUpdate();
             } catch (SQLException e) {

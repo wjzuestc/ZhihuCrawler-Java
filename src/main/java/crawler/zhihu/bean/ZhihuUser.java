@@ -10,6 +10,8 @@ import java.io.Serializable;
 public class ZhihuUser implements Serializable {
     //用户名
     private String username;
+    //用户登录名
+    private String userToken;
     //性别
     private String sex;
     //位置
@@ -22,7 +24,7 @@ public class ZhihuUser implements Serializable {
     private String position;
     //教育
     private String education;
-    //专业
+    // 专业
     private String major;
     //答案赞同数
     private int agrees;
@@ -45,6 +47,14 @@ public class ZhihuUser implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 
     public String getLocation() {
@@ -163,9 +173,10 @@ public class ZhihuUser implements Serializable {
     public String toString() {
         return "ZhihuUser{" +
                 "username='" + username + '\'' +
+                ", userToken='" + userToken + '\'' +
+                ", sex='" + sex + '\'' +
                 ", location='" + location + '\'' +
                 ", business='" + business + '\'' +
-                ", sex='" + sex + '\'' +
                 ", employment='" + employment + '\'' +
                 ", position='" + position + '\'' +
                 ", education='" + education + '\'' +

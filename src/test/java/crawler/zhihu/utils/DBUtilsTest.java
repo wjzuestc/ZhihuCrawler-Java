@@ -13,13 +13,14 @@ public class DBUtilsTest {
     public void insert() throws Exception {
         ZhihuUser zhihuUser = new ZhihuUser();
         zhihuUser.setUsername("张三");
+        zhihuUser.setUserToken("zhang-san");
         zhihuUser.setSex("男");
         zhihuUser.setLocation("Beijing");
         zhihuUser.setBusiness("互联网");
         zhihuUser.setEmployment("Alibaba");
         zhihuUser.setPosition("CTO");
         zhihuUser.setEducation("清华大学");
-        zhihuUser.setMajor("计算机");
+        zhihuUser.setEducation("computer");
         zhihuUser.setAgrees(4500);
         zhihuUser.setThanks(5656);
         zhihuUser.setAsks(120);
