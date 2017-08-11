@@ -1,4 +1,4 @@
-package crawler.zhihu.utils;
+package crawler.zhihu.module;
 
 /**
  * @Description:

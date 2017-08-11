@@ -29,7 +29,7 @@ public class WebHtmlUtils {
      */
     public static String getHtmlByUrlProxyIp(String url) {
         //设置代理
-        ProxyIpUtils.proxyIp();
+        ProxyIpUtils.getInstance().proxyIp();
         // 定义一个字符串用来存储网页内容
         String result = "";
         // 定义一个缓冲字符输入流
