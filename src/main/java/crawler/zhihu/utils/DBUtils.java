@@ -2,10 +2,13 @@ package crawler.zhihu.utils;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import crawler.zhihu.bean.ZhihuUser;
+import crawler.zhihu.module.BitSetAndQueueStore;
+import crawler.zhihu.service.ZhihuUserCrawler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Properties;
 
 /**
@@ -74,6 +77,7 @@ public class DBUtils {
      * @return
      */
     public static boolean insert(ZhihuUser zhihuUser) {
+        //这说明程序出问题了，ip被封或者其他原因，没拿到数据，则强制退出，并保存BitSet和阻塞队列
         Connection connection = getConnection();
         PreparedStatement ps = null;
         int count = 0;
@@ -101,6 +105,13 @@ public class DBUtils {
                 ps.setString(16, zhihuUser.getMajor());
                 //存储user
                 count = ps.executeUpdate();
+            } catch (SQLIntegrityConstraintViolationException e) {
+                // 规定的name不可以是null
+                System.out.println("程序出错了，没拿到数据，需要保存BisSet并退出！！");
+                //保存数据
+                BitSetAndQueueStore.serilzeAndStore(UrlFilterUtils.bits, ZhihuUserCrawler.urlQueue);
+                //强制程序退出
+                System.exit(1);
             } catch (SQLException e) {
                 System.out.println("数据插入失败！");
                 e.printStackTrace();

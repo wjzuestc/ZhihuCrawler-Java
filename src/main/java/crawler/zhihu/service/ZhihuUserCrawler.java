@@ -1,11 +1,13 @@
 package crawler.zhihu.service;
 
 import crawler.zhihu.bean.ZhihuUser;
+import crawler.zhihu.module.BitSetAndQueueStore;
 import crawler.zhihu.utils.DBUtils;
 import crawler.zhihu.utils.UrlFilterUtils;
 import crawler.zhihu.utils.UserParseUtils;
 import crawler.zhihu.utils.WebHtmlUtils;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -17,12 +19,18 @@ import java.util.concurrent.*;
  */
 public class ZhihuUserCrawler {
     //阻塞队列，存储未爬取的url 无界的queue 其实maxPoolSize 也没什么意义了
-    private static BlockingQueue<String> urlQueue = new LinkedBlockingQueue<String>();
+    // 为了防止程序突然出问题，导致退出，所以当遇到这种情况时候，保存queue，所以声明它为public
+    public static BlockingQueue<String> urlQueue = new LinkedBlockingQueue<String>();
     //创建固定线程数量的连接池  将线程数设置为10
     private static Executor executor = Executors.newFixedThreadPool(10);
 
     public static void startCrawler(String startUrl) throws InterruptedException {
-        urlQueue.put(startUrl);   //先将初始url放入队列
+        File file = new File("queue.txt");
+        if (!file.exists()) {
+            urlQueue.put(startUrl);   //先将初始url放入队列
+        } else {
+            urlQueue = BitSetAndQueueStore.getQueueFromFile();//说明上次爬取出了问题，读取上次保存未爬取的url
+        }
         System.out.println("开始进行用户信息爬取...........");
 
         //线程池创建线程执行

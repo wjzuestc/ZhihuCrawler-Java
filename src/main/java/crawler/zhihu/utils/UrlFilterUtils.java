@@ -1,5 +1,8 @@
 package crawler.zhihu.utils;
 
+import crawler.zhihu.module.BitSetAndQueueStore;
+
+import java.io.File;
 import java.util.BitSet;
 
 /**
@@ -15,9 +18,19 @@ public final class UrlFilterUtils {
     // BitSet初始分配2^28个bit
     private static final int DEFAULT_SIZE = 1 << 28;
     // 创建BitSet  大小为2^28
-    private static BitSet bits = new BitSet(DEFAULT_SIZE);
+    // 为了持久化此BitSet，防止程序突然出问题，导致后边无法去重
+    public static BitSet bits = null;
     // 不同哈希函数的种子，一般应取质数
     private static final int[] SEEDS = new int[]{3, 5, 7, 11, 13, 31, 37, 61};
+
+    static {
+        File file = new File("bitSet.txt");
+        if (!file.exists()) {
+            bits = new BitSet(DEFAULT_SIZE);  //如果第一次爬取，就直接建立新的bitset
+        } else {
+            bits = BitSetAndQueueStore.getBitSetFromFile();//若上次爬取出现问题了，就读取上次标记的BitSet，以去重
+        }
+    }
 
     /**
      * 添加元素  把8个hash函数映射的位置都置为1

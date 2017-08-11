@@ -1,18 +1,11 @@
 package crawler.zhihu.module;
 
 /**
- * @Description:
+ * @Description:格式化输入工具类
  * @Author: Jingzeng Wang
  * @Date: Created in 16:10  2017/8/10.
  */
-/**
- * 格式化输入工具类
- *
- * @author lizhgb
- * @date 2015-10-14
- * @Modified 2017-04-28
- *
- */
+
 public final class FormatJsonUtils {
 
     /**

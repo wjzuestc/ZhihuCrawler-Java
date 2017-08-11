@@ -16,7 +16,7 @@ public class CrawlerMain {
 
         // picSpider();// 爬取某个问题下的图片
 
-        userSpider();   //爬取用户信息
+       userSpider();   //爬取用户信息
 
     }
 
