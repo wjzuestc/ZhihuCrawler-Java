@@ -17,7 +17,7 @@ public class BitSetAndQueueStore {
      *
      * @param bitSet
      */
-    public static void serilzeAndStore(BitSet bitSet, BlockingQueue<String> queue) {
+    public static synchronized void serilzeAndStore(BitSet bitSet, BlockingQueue<String> queue) {
         try {
             ObjectOutputStream objectOutputStream1 = new ObjectOutputStream(new FileOutputStream(new File("bitSet.txt")));
             ObjectOutputStream objectOutputStream2 = new ObjectOutputStream(new FileOutputStream(new File("queue.txt")));
@@ -34,7 +34,7 @@ public class BitSetAndQueueStore {
      *
      * @return
      */
-    public static BitSet getBitSetFromFile() {
+    public static synchronized BitSet getBitSetFromFile() {
         BitSet bitSet = null;
         try {
             ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(new File("bitSet.txt")));
@@ -54,7 +54,7 @@ public class BitSetAndQueueStore {
      *
      * @return
      */
-    public static LinkedBlockingQueue<String> getQueueFromFile() {
+    public synchronized static LinkedBlockingQueue<String> getQueueFromFile() {
         LinkedBlockingQueue<String> queue = null;
         try {
             ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(new File("queue.txt")));

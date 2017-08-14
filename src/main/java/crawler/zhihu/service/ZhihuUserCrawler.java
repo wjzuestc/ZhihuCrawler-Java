@@ -30,11 +30,12 @@ public class ZhihuUserCrawler {
             urlQueue.put(startUrl);   //先将初始url放入队列
         } else {
             urlQueue = BitSetAndQueueStore.getQueueFromFile();//说明上次爬取出了问题，读取上次保存未爬取的url
+            System.out.println(urlQueue.size());
         }
         System.out.println("开始进行用户信息爬取...........");
 
         //线程池创建线程执行
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -57,7 +58,7 @@ public class ZhihuUserCrawler {
             @Override
             public void run() {
                 while (true) {
-                    if (((ThreadPoolExecutor) executor).getActiveCount() < 5) {
+                    if (((ThreadPoolExecutor) executor).getActiveCount() < 10) {
                         executor.execute(new Runnable() {
                             @Override
                             public void run() {

@@ -29,6 +29,7 @@ public final class UrlFilterUtils {
             bits = new BitSet(DEFAULT_SIZE);  //如果第一次爬取，就直接建立新的bitset
         } else {
             bits = BitSetAndQueueStore.getBitSetFromFile();//若上次爬取出现问题了，就读取上次标记的BitSet，以去重
+            System.out.println(bits.size());
         }
     }
 
