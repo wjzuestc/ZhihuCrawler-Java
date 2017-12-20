@@ -19,6 +19,8 @@
     
 ## 百万知乎用户信息展示
 
-利用百度开源框架Echarts进行展示,由于没搭栈，就直接放了图片。
+利用百度开源框架Echarts进行展示,由于没搭栈，就直接放了图片：
+
 https://github.com/wjzuestc/ZhihuCrawler-Java/blob/master/数据分析结果1.png
+
 https://github.com/wjzuestc/ZhihuCrawler-Java/blob/master/数据分析结果2.png
