@@ -8,40 +8,50 @@ import java.util.BitSet;
 /**
  * @Description: url去重算法 Bloom Filter布隆过滤器算法
  * 在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误（将“不在”集合内的元素判定为“在”）换取了存储空间的极大节省
- * 利用多个不同的Hash函数    不在 就一定不在   在  不一定在
+ * 利用多个不同的Hash函数（减小冲突）   不在：就一定不在   在：不一定在  hash冲突
  * HashSet和HashMap也可以，但是消耗内存的32倍
  * @Author: Jingzeng Wang
  * @Date: Created in 17:36  2017/8/9.
  */
 public final class UrlFilterUtils {
 
-    // BitSet初始分配2^28个bit
+    /**
+     * BitSet初始容量分配2^28个bit
+     */
     private static final int DEFAULT_SIZE = 1 << 28;
-    // 创建BitSet  大小为2^28
-    // 为了持久化此BitSet，防止程序突然出问题，导致后边无法去重
+
+    /**
+     * BitSet 集合  初始大小2^28
+     * 并异常退出时，持久化此BitSet，防止程序突然出问题，导致后边无法去重
+     */
     public static BitSet bits = null;
-    // 不同哈希函数的种子，一般应取质数
+
+    /**
+     * 不同哈希函数的种子，一般应取质数
+     */
     private static final int[] SEEDS = new int[]{3, 5, 7, 11, 13, 31, 37, 61};
 
     static {
         File file = new File("bitSet.txt");
+        //如果第一次爬取，就直接建立新的bitset
         if (!file.exists()) {
-            bits = new BitSet(DEFAULT_SIZE);  //如果第一次爬取，就直接建立新的bitset
+            bits = new BitSet(DEFAULT_SIZE);
         } else {
-            bits = BitSetAndQueueStore.getBitSetFromFile();//若上次爬取出现问题了，就读取上次标记的BitSet，以去重
+            //若上次爬取出现问题了，就读取上次标记的BitSet，以实现断点续爬
+            bits = BitSetAndQueueStore.getBitSetFromFile();
             System.out.println(bits.size());
         }
     }
 
     /**
      * 添加元素  把8个hash函数映射的位置都置为1
-     * 加synchronized类锁
+     * 加synchronized类锁  保证线程安全
      *
      * @param key
      * @return
      */
     public static synchronized boolean add(String key) {
-        int keyCode[] = lrandom(key);
+        int[] keyCode = lrandom(key);
         bits.set(keyCode[0]);
         bits.set(keyCode[1]);
         bits.set(keyCode[2]);
@@ -60,9 +70,9 @@ public final class UrlFilterUtils {
      * @return
      */
     public static boolean exist(String key) {
-        int keyCode[] = lrandom(key);
-        if (bits.get(keyCode[0]) &&
-                bits.get(keyCode[1])
+        int[] keyCode = lrandom(key);
+        if (bits.get(keyCode[0])
+                && bits.get(keyCode[1])
                 && bits.get(keyCode[2])
                 && bits.get(keyCode[3])
                 && bits.get(keyCode[4])

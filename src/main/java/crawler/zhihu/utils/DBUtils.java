@@ -18,7 +18,7 @@ import java.util.Properties;
  */
 public class DBUtils {
 
-    //Druid连接池
+    /* Druid连接池 */
     private static final DruidDataSource DATA_SOURCE;
 
     private static final String DRIVER;
@@ -77,7 +77,7 @@ public class DBUtils {
      * @return
      */
     public static boolean insert(ZhihuUser zhihuUser) {
-        //这说明程序出问题了，ip被封或者其他原因，没拿到数据，则强制退出，并保存BitSet和阻塞队列
+
         Connection connection = getConnection();
         PreparedStatement ps = null;
         int count = 0;
@@ -106,11 +106,12 @@ public class DBUtils {
                 //存储user
                 count = ps.executeUpdate();
             } catch (SQLIntegrityConstraintViolationException e) {
-                // 规定的name不可以是null
+                // 规定的name不可以是null,如果插入失败name==null，可能是ip被封或者其他原因，
+                // 没拿到数据，则强制退出，并保存BitSet和阻塞队列。要不然会一直是错误数据，抛出异常
                 System.out.println("程序出错了，没拿到数据，需要保存BisSet并退出！！");
-                //保存数据
+                // 保存数据
                 BitSetAndQueueStore.serilzeAndStore(UrlFilterUtils.bits, ZhihuUserCrawler.urlQueue);
-                //强制程序退出
+                // 强制程序退出
                 System.exit(1);
             } catch (SQLException e) {
                 System.out.println("数据插入失败！");

@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @Description: 序列化BitSet 防止出现错误，多次爬，后边没法去重了
  * @Author: Jingzeng Wang
- * @Date: Created in 22:16  2017/8/10.
+ * @Date: Created in 22:16  2017/7/10.
  */
 public class BitSetAndQueueStore {
 
@@ -50,7 +50,7 @@ public class BitSetAndQueueStore {
     }
 
     /**
-     * 反序列化出上次的爬的还未保存的urlQueue
+     * 反序列化出上次保存的还未爬取的urlQueue
      *
      * @return
      */

@@ -15,21 +15,30 @@ import java.util.concurrent.*;
 /**
  * @Description: 爬取用户信息数据
  * @Author: Jingzeng Wang
- * @Date: Created in 20:29  2017/8/9.
+ * @Date: Created in 20:29  2017/7/9.
  */
 public class ZhihuUserCrawler {
-    //阻塞队列，存储未爬取的url 无界的queue 其实maxPoolSize 也没什么意义了
-    // 为了防止程序突然出问题，导致退出，所以当遇到这种情况时候，保存queue，所以声明它为public
-    public static BlockingQueue<String> urlQueue = new LinkedBlockingQueue<String>();
-    //创建固定线程数量的连接池  将线程数设置为10
+
+    /**
+     * 阻塞队列，存储待爬取的ur
+     * 为了防止程序突然出问题，导致退出，所以当遇到这种情况时候，保存queue，所以声明它为public，实现断点续爬
+     */
+    public static BlockingQueue<String> urlQueue = new LinkedBlockingQueue<>();
+
+    /**
+     * 创建固定线程数量的连接池  将线程数设置为10  因为是IO密集型任务  2*cpu+1
+     */
     private static Executor executor = Executors.newFixedThreadPool(10);
 
     public static void startCrawler(String startUrl) throws InterruptedException {
+        // 异常退出时，保存queue
         File file = new File("queue.txt");
         if (!file.exists()) {
-            urlQueue.put(startUrl);   //先将初始url放入队列
+            // 先将初始url放入队列
+            urlQueue.put(startUrl);
         } else {
-            urlQueue = BitSetAndQueueStore.getQueueFromFile();//说明上次爬取出了问题，读取上次保存未爬取的url
+            // 说明上次爬取出了问题，读取上次保存未爬取的url
+            urlQueue = BitSetAndQueueStore.getQueueFromFile();
             System.out.println(urlQueue.size());
         }
         System.out.println("开始进行用户信息爬取...........");
@@ -41,9 +50,13 @@ public class ZhihuUserCrawler {
                 public void run() {
                     while (true) {
                         String url = getUrlFromQueue();
+                        // 去重
                         if (url != null) {
+                            // 若此url还没爬取过
                             if (!UrlFilterUtils.exist(url)) {
+                                // 标记bloom过滤器
                                 UrlFilterUtils.add(url);
+                                // 开始爬取此url
                                 spilderTheUrl(url);
                             } else {
                                 System.out.println("此url重复，不再进行爬取");
@@ -53,11 +66,12 @@ public class ZhihuUserCrawler {
                 }
             });
         }
-        //监听线程，当线程池的线程数量因为某些情况终止了，则创建线程进入线程池
+        //监听线程，当线程池线程的执行因为某些情况终止了，则创建新的任务进入线程池
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
+                    // 判断线程池的线程执行数<10 则再提交任务给线程池执行
                     if (((ThreadPoolExecutor) executor).getActiveCount() < 10) {
                         executor.execute(new Runnable() {
                             @Override
@@ -110,7 +124,7 @@ public class ZhihuUserCrawler {
      * @param url
      */
     private static void spilderTheUrl(String url) {
-        //通过代理的方式url的html页面
+        //通过代理的方式获取此url的html页面
         String html = WebHtmlUtils.getHtmlByUrlProxyIp(url);
         //解析页面
         List list = UserParseUtils.getInstance().pageParser(html, url);
@@ -123,7 +137,9 @@ public class ZhihuUserCrawler {
     }
 
     /**
-     * 将第一页的关注者添加到阻塞队列：不爬取所有的关注：1. 怕关注者太多，阻塞队列会出现异常
+     * 将第一页的关注者添加到阻塞队列：
+     * 不爬取所有的关注：
+     * 1. 怕关注者太多，阻塞队列会出现异常
      * 2. 这样可减少爬取次数，不用再更新另一页了
      * int i = 1;   // 就拿第一页的关注者  爬多页方法
      * String userFollowingUrl = url + "?page=" + i;

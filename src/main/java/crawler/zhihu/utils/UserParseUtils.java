@@ -41,14 +41,17 @@ public class UserParseUtils {
     private UserParseUtils() {
     }
 
+
     /**
      * 解析html页面，获得user
      *
-     * @param html
-     * @return
+     * @param html html页面内容
+     * @param url  此url
+     * @return list[UserInfo,followingUser]  注意：list存储的类型是不一致的
      */
     public List pageParser(String html, String url) {
         ZhihuUser user = new ZhihuUser();
+        // 取用户token  根据知乎url规则
         user.setUserToken(url.substring(url.indexOf("people/") + 7, url.indexOf("/following")));
         Document document = Jsoup.parse(html);
         String dataStateJson = document.select("[data-state]").first().attr("data-state");
